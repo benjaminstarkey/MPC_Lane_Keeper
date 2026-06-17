@@ -31,8 +31,7 @@ E = [0; (-2*(Cf*lf-Cr*lr))/m - Vx^2; 0; (-2*(Cf*lf^2+Cr*lr^2))/Izz]
 C = eye(4)
 D = zeros(4,1)
 
-%% OPEN LOOP TEST
-% Create continuous-time system
+%% OL Dynamics Check
 sys_c = ss(A, B, C, D);
 
 % Run a step response with a 0.035 rad (2 degree) steering input
@@ -41,9 +40,18 @@ u = 0.035 * ones(size(t)); % Constant front steering angle
 [y, t, x] = lsim(sys_c, u, t);
 
 figure
-subplot(2,1,1); plot(t, x(:,1)); title('Lateral Error (e_1) [m]')
+subplot(2,1,1)
+plot(t, x(:,1))
+title('Lateral Error (e_1) [m]')
 grid on
-subplot(2,1,2); plot(t, x(:,3)); title('Heading Error (e_2) [rad]')
+
+subplot(2,1,2)
+plot(t, x(:,3))
+title('Heading Error (e_2) [rad]')
 grid on
 
 
+%% Discrete Time State Space
+dt = 0.05
+
+sys_d = c2d(sys_c, dt, 'zoh') % zoh for discrete and eventual PIL test
