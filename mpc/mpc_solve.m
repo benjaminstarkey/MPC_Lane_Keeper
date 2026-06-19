@@ -1,4 +1,4 @@
-function [u_optimal, u_horizon] = mpc_solve(x_k, F, Phi, Np, Nc, Q, R, u_max)
+function [u_optimal, u_horizon] = mpc_solve(x_k, F, Phi, Gamma, rho_preview, Np, Nc, Q, R, u_max)
 
 Nx = size(Q,1);
 Nu = size(R,1);
@@ -9,9 +9,11 @@ Q_bar = kron(eye(Np), Q);
 R_bar = kron(eye(Nc), R);
 
 % QP Matrices: 0.5*U'*H_qp*U + f_qp'*U
+    % Hessian H: 
+    % Gradient f: acts as feedforward control to upcoming curve disturbances
 H_qp = 2*(Phi'*Q_bar*Phi + R_bar);
 H_qp = (H_qp + H_qp') / 2; % ensure numerical skew-sym
-f_qp = 2*Phi'*Q_bar*F*x_k;
+f_qp = 2*Phi'*Q_bar*(F*x_k + Gamma*rho_preview);
 
 u_lb = -u_max * ones(Nc*Nu, 1);
 u_ub = u_max * ones(Nc*Nu, 1);
