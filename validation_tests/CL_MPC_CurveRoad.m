@@ -114,10 +114,6 @@ title('Real-Time Lateral Vehicle Dynamics Tracking (Global S-Curve)');
 xlabel('Global Position X [meters]');
 ylabel('Lateral Deviation Y [meters]');
 
-% axis([-5, Vx*sim_time + 10, -3, 3]);
-% ylim([-2.5, 2.5])
-
-
 %% Control Loop
 
 for k = 1:t_steps
@@ -145,7 +141,7 @@ Y_mpc = F*x_hat + Phi*u_horz + Gamma*rho_preview;
 
 
 
-%%% 3. Response Plotting and Animation
+%%% 3. Response Plotting and Animation %%%
 % Store for plotting
 x_true_vec(k+1,:) = x_true'; % store true states
 x_hat_vec(k+1,:) = x_hat'; % store estimated states
@@ -168,6 +164,7 @@ for j = 1:Np
     pred_Y(j) = e1_pred * cos(theta_road(pred_idx)) + Y_road(pred_idx);
 end
 
+% Update Plotting Handles for Animation
 set(hCarBody, 'XData', global_X(k+1), 'YData', global_Y(k+1));
 set(hTrajectory, 'XData', global_X(1:k+1), 'YData', global_Y(1:k+1));
 set(hHorizonTail, 'XData', pred_X, 'YData', pred_Y);
@@ -177,7 +174,7 @@ xlim([global_X(k+1) - 20, global_X(k+1) + 40]);
 ylim([global_Y(k+1) - 10, global_Y(k+1) + 20]);
 
 drawnow; % Flush drawing buffer
-pause(0.02); % Control frame rate
+pause(0.01); % Control frame rate
 
 % Update state and input for next iteration
 x_k = x_true;
