@@ -134,7 +134,7 @@ x_meas = H*x_true + sensor_noise .* randn(2,1);
 rho_preview = rho(k+1:k+Np); % preview next Np curve entries for MPC
 
 % Solve QP for u_horizon to plot planned trajectory
-[u_opt, u_horz] = mpc_solve(x_hat, F, Phi, Gamma, rho_preview, Np, Nc, Q_mpc, R_mpc, max_turn);
+[u_opt, u_horz] = mpc_solve_active_set(x_hat, F, Phi, Gamma, rho_preview, Np, Nc, Q_mpc, R_mpc, max_turn);
 
 % Get planned mpc trajectory
 Y_mpc = F*x_hat + Phi*u_horz + Gamma*rho_preview;

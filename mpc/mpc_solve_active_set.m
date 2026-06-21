@@ -22,11 +22,11 @@ f_qp = 2*Phi'*Q_bar*(F*x_k + Gamma*rho_preview);
 % u_lb = -u_max * ones(Nc*Nu, 1);
 % u_ub = u_max * ones(Nc*Nu, 1);
 
-% mpcActiveSetSolver setup: A_ineq * U >= b_ineq
-I_nc = eye(Nc * nu);
+% mpcActiveSetSolver setup for constraints: A_ineq * U >= b_ineq
+I_nc = eye(Nc * Nu);
 A_ineq = [I_nc; -I_nc];
-b_ineq = [-delta_max * ones(Nc * nu, 1); 
-          -delta_max * ones(Nc * nu, 1)];
+b_ineq = [u_max * ones(Nc * Nu, 1); 
+          u_max * ones(Nc * Nu, 1)];
 
 persistent iA0_prev;
     
@@ -35,10 +35,10 @@ if isempty(iA0_prev)
    iA0_prev = false(size(b_ineq)); 
 end
 
-options = mpcActiveSetSolverOptions;
+options = mpcActiveSetOptions;
 options.MaxIterations = 120; % stop regardless after 120 iterations
 
-A_eq = zeros(0, Nc * nu);
+A_eq = zeros(0, Nc * Nu);
 b_eq = zeros(0, 1);
 
 % QP options, ensure suppress for speed
@@ -52,7 +52,7 @@ iA0_prev = iA_out;
 
 if status <= 0
     warning('MPC Solver failed to find an optimal solution. Defaulting to 0 steering.');
-    u_horizon = zeros(Nc * nu, 1);
+    u_horizon = zeros(Nc * Nu, 1);
 end
 
 % Extract optimal steering commands
