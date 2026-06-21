@@ -14,7 +14,7 @@ lr = 1.6; % (m), distance from COM to rear tire
 dt = 0.05; % 20Hz
 
 % Generate discrete dynamic and control matrices (A,B)
-[Ad, Bd, Ed] = bicycle_dynamics(m, Izz, Vx, Cf, Cr, lf, lr, dt);
+[Ad, Bd, Ed, Cd, Dd] = bicycle_dynamics(m, Izz, Vx, Cf, Cr, lf, lr, dt);
 
 % Initialize prediction and control horizon steps
 Np = 20;

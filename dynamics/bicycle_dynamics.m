@@ -8,7 +8,7 @@
 
 % Notebook has written dynamics derivation
 
-function [Ad, Bd, Ed] = bicycle_dynamics(m, Izz, Vx, Cf, Cr, lf, lr, dt)
+function [Ad, Bd, Ed, Cd, Dd] = bicycle_dynamics(m, Izz, Vx, Cf, Cr, lf, lr, dt)
 
 % m (kg), mass
 % Izz (kg*m^2), inertia about birds-eye z axis
@@ -45,5 +45,7 @@ sys_d = c2d(sys_c, dt, 'zoh'); % zoh for discrete and eventual PIL test
 Ad = sys_d.A; % 4x4
 Bd = sys_d.B(:,1); % 4x1
 Ed = sys_d.B(:,2); % 4x1
+Cd = sys_d.C;
+Dd = sys_d.D;
 
 end
