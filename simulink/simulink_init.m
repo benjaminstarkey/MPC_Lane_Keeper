@@ -34,3 +34,47 @@ for i = 1
 end
 
 y_out
+
+%% Bike Kalman Filter
+
+x_hat_0 = [1; 0; deg2rad(0.5); 0];
+P_hat_0 = diag([5, 5, 5, 5]);
+last_u = 0; % Initially 0 control input
+
+H = [1, 0, 0, 0;
+     0, 0, 1, 0]; % only measure e1, e2
+Q_kf = diag([1e-5, 1e-3, 1e-4, 1e-3]);
+R_kf = diag([0.08.^2, deg2rad(3).^2]);
+
+process_noise = [0.001; 0.003; deg2rad(0.3); deg2rad(0.1)];
+sensor_noise = [0.1; deg2rad(1)];
+
+%% MPC Parameters
+Np = 20;
+Nc = 5;
+
+% Generate mpc matrices F (state-horizon) and Phi (control-horizon)
+[F, Phi, Gamma] = build_mpc_matrices(Ad, Bd, Ed, Np, Nc);
+
+
+
+%% Road Curvature Disturbance Rho
+
+% Simulation Parameters
+sim_time = 8;
+t_steps = sim_time/dt;
+t_vec = 0:dt:sim_time;
+
+% Build road curvature profile
+rho = zeros(t_steps+Np+10,1);
+for i = 1:length(rho)
+    t_road = i*dt;
+    if t_road >= 1.5 && t_road < 3
+        rho(i) = 0.035; % 1/r, r = 400m
+    elseif t_road >= 4 && t_road < 5.5
+        rho(i) = -0.035;
+    end
+end
+
+rho_ts = timeseries(rho, 0:dt:(length(rho)-1)*dt)
+
