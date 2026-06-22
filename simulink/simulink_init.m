@@ -49,12 +49,20 @@ R_kf = diag([0.08.^2, deg2rad(3).^2]);
 process_noise = [0.001; 0.003; deg2rad(0.3); deg2rad(0.1)];
 sensor_noise = [0.1; deg2rad(1)];
 
+process_noise_power = process_noise.^2 .* dt;
+sensor_noise_power = sensor_noise.^2 .* dt;
+
 %% MPC Parameters
 Np = 20;
 Nc = 5;
 
 % Generate mpc matrices F (state-horizon) and Phi (control-horizon)
 [F, Phi, Gamma] = build_mpc_matrices(Ad, Bd, Ed, Np, Nc);
+
+Q_mpc = diag([10, 1, 50, 5]);
+R_mpc = 0.1;
+
+max_turn = deg2rad(25);
 
 
 
@@ -76,5 +84,13 @@ for i = 1:length(rho)
     end
 end
 
-rho_ts = timeseries(rho, 0:dt:(length(rho)-1)*dt)
+
+rho_k_vec = [t_vec', rho(1:length(t_vec'))];
+
+
+preview_data = zeros(length(t_vec'), Np);
+for k = 1:length(t_vec')
+    preview_data(k, :) = rho(k : k + Np - 1)';
+end
+rho_preview_vec = [t_vec', preview_data];
 
