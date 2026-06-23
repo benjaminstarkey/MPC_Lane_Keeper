@@ -92,8 +92,9 @@ legend([hCarTrue, hCarEst, hHorizonTail], {'True Physical Car', 'KF State Estima
 
 % Steering Subplot
 subplot(3, 1, 3); hold on; grid on;
-hSteerLine = plot(sim_t(1:end-1), rad2deg(u_optimal(1:end-1)), 'k', 'LineWidth', 1.5);
-hSteerIndicator = plot(0, 0, 'ro', 'MarkerFaceColor', 'r');
+% Initialize steering line as empty (NaN) so it draws dynamically
+hSteerLine = stairs(NaN, NaN, 'k', 'LineWidth', 1.5);
+hSteerIndicator = stairs(0, 0, 'ro', 'MarkerFaceColor', 'r');
 xlabel('Time [seconds]'); ylabel('Steering Input \delta [deg]');
 ylim([-25, 25]); xlim([0, sim_t(end)]);
 
@@ -137,6 +138,7 @@ for k = 1:length(sim_t)-1
     
     % Update steering indicator
     subplot(3, 1, 3);
+    set(hSteerLine, 'XData', sim_t(1:k), 'YData', rad2deg(u_optimal(1:k)));
     set(hSteerIndicator, 'XData', sim_t(k), 'YData', rad2deg(u_optimal(k)));
     
     drawnow;
