@@ -82,7 +82,7 @@ plot(X_road, Y_road, 'r--', 'LineWidth', 1);
 
 % Create persistent animation handles
 hCarTrue   = plot(0, 0, 'Square', 'MarkerSize', 14, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
-hCarEst    = plot(0, 0, 'o', 'MarkerSize', 8, 'MarkerFaceColor', 'm', 'MarkerEdgeColor', 'k');
+hCarEst    = plot(0, 0, 'o', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'MarkerEdgeColor', 'k');
 hTruePath  = plot(NaN, NaN, 'b-', 'LineWidth', 1.5);
 hHorizonTail = plot(NaN, NaN, 'g-o', 'LineWidth', 1.5, 'MarkerSize', 4, 'MarkerFaceColor', 'g');
 
@@ -92,7 +92,7 @@ legend([hCarTrue, hCarEst, hHorizonTail], {'True Physical Car', 'KF State Estima
 
 % Steering Subplot
 subplot(3, 1, 3); hold on; grid on;
-hSteerLine = plot(sim_t(1:end-1), rad2deg(u_optimal(1:end-1)), 'b', 'LineWidth', 1.5);
+hSteerLine = plot(sim_t(1:end-1), rad2deg(u_optimal(1:end-1)), 'k', 'LineWidth', 1.5);
 hSteerIndicator = plot(0, 0, 'ro', 'MarkerFaceColor', 'r');
 xlabel('Time [seconds]'); ylabel('Steering Input \delta [deg]');
 ylim([-25, 25]); xlim([0, sim_t(end)]);
