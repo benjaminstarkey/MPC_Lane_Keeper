@@ -1,5 +1,7 @@
 %% Bike Animation Post-processing from Simulink
 
+
+
 % Grab data from out struct
 sim_t = out.tout;
 
@@ -8,19 +10,18 @@ x_hat_vec = out.x_hat_vec.data;
 u_optimal = out.u_opt.data;
 mpc_horz_traj = out.mpc_horz_traj.data;
 
-% 1. Squeeze out any 3D singleton dimensions
+% Squeeze out any 3D singleton dimensions
 if ndims(mpc_horz_traj) == 3, mpc_horz_traj = squeeze(mpc_horz_traj); end
 
-% 2. Transpose matrices if they are oriented as [States x Time]
+% Transpose matrices if they are oriented as [States x Time]
 if size(mpc_horz_traj, 1) < size(mpc_horz_traj, 2) && size(mpc_horz_traj, 2) == N_t
     mpc_horz_traj = mpc_horz_traj';
 end
 
-
+% Pad the road curvature profile with zeros for the horizon remainder
 required_road_len = length(sim_t) + Np;
 
 if length(rho) < required_road_len
-    % Pad the road curvature profile with zeros (straight line) for the remainder
     rho_padded = [rho; zeros(required_road_len - length(rho), 1)];
 else
     rho_padded = rho;
@@ -41,7 +42,7 @@ X_road = road_coords(:, 1);
 Y_road = road_coords(:, 2);
 theta_road = road_coords(:, 3);
 
-% Global Coords
+% Global Coords Pre-allocation
 global_X_true = zeros(length(sim_t), 1);
 global_Y_true = zeros(length(sim_t), 1);
 global_X_hat  = zeros(length(sim_t), 1);
@@ -50,7 +51,8 @@ global_Y_hat  = zeros(length(sim_t), 1);
 % Rotate true and estimated states into global frame
 for k = 1:length(sim_t)
     th = theta_road(k);
-    % Use Rotation Matrix
+
+    % Use 2D Rotation Matrix
     R_matrix = [cos(th), -sin(th); 
                 sin(th),  cos(th)];
     
@@ -65,11 +67,11 @@ for k = 1:length(sim_t)
     global_Y_hat(k) = pos_hat(2);
 end
 
-% Figure
+% Figure Init
 figure('Name', 'Simulink Closed-Loop S-Curve Performance', 'NumberTitle', 'off', 'Position', [100, 100, 1100, 550]);
 subplot(3, 1, [1, 2]); hold on; grid on; axis equal;
 
-% Draw Lane Boundaries
+% Draw Left/Right Lane Boundaries
 lane_width = 3.6;
 X_left  = X_road - (lane_width/2) * sin(theta_road);
 Y_left  = Y_road + (lane_width/2) * cos(theta_road);
@@ -92,7 +94,8 @@ legend([hCarTrue, hCarEst, hHorizonTail], {'True Physical Car', 'KF State Estima
 
 % Steering Subplot
 subplot(3, 1, 3); hold on; grid on;
-% Initialize steering line as empty (NaN) so it draws dynamically
+% Initialize steering line as empty (NaN) so it draws dynamically, stairs
+% for discrete command input
 hSteerLine = stairs(NaN, NaN, 'k', 'LineWidth', 1.5);
 hSteerIndicator = stairs(0, 0, 'ro', 'MarkerFaceColor', 'r');
 xlabel('Time [seconds]'); ylabel('Steering Input \delta [deg]');
