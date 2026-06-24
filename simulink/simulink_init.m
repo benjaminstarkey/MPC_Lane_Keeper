@@ -7,6 +7,7 @@ clc
 
 
 %% Plant Dynamics
+% CAN TRY MISMATCH FOR ROBUSTNESS ANALYSIS
 % Bike Dynamic Parameters
 m = 1500; % (kg), mass
 Izz = 3000; % (kg*m^2), inertia about birds-eye z axis
@@ -24,16 +25,6 @@ dt = 0.05; % 20Hz
 [Ad, Bd, Ed, Cd, Dd] = bicycle_dynamics(m, Izz, Vx, Cf, Cr, lf, lr, dt);
 
 x_0 = [-0.7; 0.2; deg2rad(4); -0.1]; % initial offset state
-
-
-%% Test:
-mux_input = [0.2; 0.05]
-for i = 1
-    x_1 = Ad*x_0 + [Bd, Ed] * [mux_input];
-    y_out = Cd*x_1 + Dd*[mux_input]
-end
-
-y_out
 
 %% Bike Kalman Filter
 
@@ -64,7 +55,11 @@ R_mpc = 0.1;
 
 max_turn = deg2rad(25);
 
+%% LQR Control for Comparison
+Q_lqr = diag([10, 1, 50, 5]);
+R_lqr = 0.1;
 
+K_lqr = dlqr(Ad, Bd, Q_lqr, R_lqr);
 
 %% Road Curvature Disturbance Rho
 
@@ -93,4 +88,3 @@ for k = 1:length(t_vec')
     preview_data(k, :) = rho(k : k + Np - 1)';
 end
 rho_preview_vec = [t_vec', preview_data];
-
