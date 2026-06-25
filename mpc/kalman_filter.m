@@ -2,12 +2,18 @@ function [x_hat_p, P_hat_p, K_kf] = kalman_filter(x_hat, u, P_hat, rho, x_meas, 
 
 % Measure only lateral and heading error (camera and IMU)
 
+% Force column vector and scalar types safely (for codegen)
+x_hat_col = x_hat(:);
+x_meas_col = x_meas(:);
+u_val = u(1);
+rho_val = rho(1);
+
 % Time Update
-x_hat_m = Ad*x_hat + Bd*u + Ed*rho; % propogate states
+x_hat_m = Ad*x_hat_col + Bd*u_val + Ed*rho_val; % propogate states
 P_hat_m = Ad*P_hat*Ad'+ Q_kf; % propogate covariance
 
 % Measurement Innovation
-innovation = x_meas - H*x_hat_m; % create residual between meas and dynamics
+innovation = x_meas_col - H*x_hat_m; % create residual between meas and dynamics
 K_kf = P_hat_m*H'/(H*P_hat_m*H' + R_kf); % compute optimal Kalman gain
 
 x_hat_p = x_hat_m + K_kf*innovation; % update estimated states
