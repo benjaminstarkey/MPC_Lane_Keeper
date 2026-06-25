@@ -2,10 +2,6 @@
 clear
 clc
 
-
-
-
-
 %% Plant Dynamics
 % CAN TRY MISMATCH FOR ROBUSTNESS ANALYSIS
 % Bike Dynamic Parameters
@@ -34,8 +30,8 @@ last_u = 0; % Initially 0 control input
 
 H = [1, 0, 0, 0;
      0, 0, 1, 0]; % only measure e1, e2
-Q_kf = diag([1e-5, 1e-3, 1e-4, 1e-3]);
-R_kf = diag([0.08.^2, deg2rad(3).^2]);
+Q_kf = diag([1e-3, 1e-2, 4e-3, 2e-3]);
+R_kf = diag([0.08.^2, deg2rad(1.5).^2]);
 
 process_noise = [0.001; 0.003; deg2rad(0.3); deg2rad(0.1)];
 sensor_noise = [0.1; deg2rad(1)];
@@ -50,8 +46,8 @@ Nc = 5;
 % Generate mpc matrices F (state-horizon) and Phi (control-horizon)
 [F, Phi, Gamma] = build_mpc_matrices(Ad, Bd, Ed, Np, Nc);
 
-Q_mpc = diag([10, 1, 50, 5]);
-R_mpc = 0.1;
+Q_mpc = diag([30, 1, 40, 5]);
+R_mpc = 100;
 
 max_turn = deg2rad(25);
 
@@ -72,9 +68,9 @@ t_vec = 0:dt:sim_time;
 rho = zeros(t_steps+Np+10,1);
 for i = 1:length(rho)
     t_road = i*dt;
-    if t_road >= 1.5 && t_road < 3
+    if t_road >= 3 && t_road < 4.5
         rho(i) = 0.035; % 1/r, r = 400m
-    elseif t_road >= 4 && t_road < 5.5
+    elseif t_road >= 5.5 && t_road < 7
         rho(i) = -0.035;
     end
 end
