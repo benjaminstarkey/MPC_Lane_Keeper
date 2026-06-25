@@ -8,15 +8,15 @@ sim_t = out.tout;
 x_true_vec = out.x_true_vec.data;
 x_hat_vec = out.x_hat_vec.data;
 u_optimal = out.u_opt.data;
-mpc_horz_traj = out.mpc_horz_traj.data;
+u_horizon_vec = out.u_horizon.data;
+P_horz_vec = out.P_horz.data;
 
 % Squeeze out any 3D singleton dimensions
-if ndims(mpc_horz_traj) == 3, mpc_horz_traj = squeeze(mpc_horz_traj); end
-
-% Transpose matrices if they are oriented as [States x Time]
-if size(mpc_horz_traj, 1) < size(mpc_horz_traj, 2) && size(mpc_horz_traj, 2) == length(sim_t)
-    mpc_horz_traj = mpc_horz_traj';
+if ndims(u_horizon_vec) == 3
+    u_horizon_vec = squeeze(u_horizon_vec);
+    u_horizon_vec = u_horizon_vec';
 end
+
 
 % Pad the road curvature profile with zeros for the horizon remainder
 required_road_len = length(sim_t) + Np;
@@ -104,9 +104,22 @@ ylim([-25, 25]); xlim([0, sim_t(end)]);
 
 %% 5. Play Dynamic Animation Loop
 for k = 1:length(sim_t)-1
-    % Get current state mpc horizon trajectory (in error frame)
-    current_Y_mpc = mpc_horz_traj(k, :);
+    % Calculate current state mpc horizon trajectory (in error frame)
+    x_hat_k = x_hat_vec(k, :)'; % 4x1
+    u_horz_k = u_horizon_vec(k, :)'; % 5x1
+    P_horz_k = P_horz_vec(k, :)'; % 20x1
+
+    % Reconstruct P_k road disturbance vec at current time step
+    % P_k = zeros(Np, 1);
+    % for p = 1:Np
+    %     idx_future = min(k + p, length(rho_padded));
+    %     P_k(p) = rho_padded(idx_future);
+    % end
+
+    % Solve for mpc trajectory
+    current_Y_mpc = F*x_hat_k + Phi*u_horz_k + Gamma*P_horz_k;
     
+    % Pre-allocate for mpc trajectory in global frame
     pred_X = zeros(Np, 1);
     pred_Y = zeros(Np, 1);
     
