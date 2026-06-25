@@ -14,7 +14,7 @@ mpc_horz_traj = out.mpc_horz_traj.data;
 if ndims(mpc_horz_traj) == 3, mpc_horz_traj = squeeze(mpc_horz_traj); end
 
 % Transpose matrices if they are oriented as [States x Time]
-if size(mpc_horz_traj, 1) < size(mpc_horz_traj, 2) && size(mpc_horz_traj, 2) == N_t
+if size(mpc_horz_traj, 1) < size(mpc_horz_traj, 2) && size(mpc_horz_traj, 2) == length(sim_t)
     mpc_horz_traj = mpc_horz_traj';
 end
 
