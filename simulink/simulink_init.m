@@ -87,4 +87,7 @@ preview_data = zeros(length(t_vec'), Np);
 for k = 1:length(t_vec')
     preview_data(k, :) = rho(k : k + Np - 1)';
 end
+
 rho_preview_vec = [t_vec', preview_data];
+
+disp('Initialized bike model parameters and environment. Run simulink model next.')
