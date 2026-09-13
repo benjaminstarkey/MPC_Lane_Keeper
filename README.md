@@ -7,14 +7,14 @@ Created a Bike Controller using a Kalman filter and Model Predictive Control (MP
 A high-level block diagram of the model's structure is shown below.
 
 <p align="center">
-  <img src="Results/MPC_Lane_Keeper_Block_Diagram.png" width="700">
+  <img src="results/MPC_Lane_Keeper_Block_Diagram.png" width="700">
 </p>
 
 ## Simulink Model
 The Simulink model is shown below, where the KF and MPC are combined into a single bike controller subsystem. The programming emphasizes codegen capability for an eventual demonstration of the bike controller logic on hardware like a Teensy.
 
 <p align="center">
-  <img src="Results/MPC_Lane_Keeper_Simulink.png" width="700">
+  <img src="results/MPC_Lane_Keeper_Simulink.png" width="700">
 </p>
 
 ## Closed Loop Simulation
